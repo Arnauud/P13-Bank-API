@@ -1,23 +1,44 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Profile from "./pages/Profile";
-import Error from "./pages/Error";
-import "./styles/main.scss";
+import React, { useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Navigation from "./components/Navigation";
+import Footer from "./components/Footer";
+import HomePage from "./pages/HomePage";
+import SignInPage from "./pages/SignInPage";
+import UserDashboardPage from "./pages/UserDashboardPage";
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+
+  const handleLogin = (name) => {
+    setIsLoggedIn(true);
+    setUsername(name);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUsername('');
+  };
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="*" element={<Error />} />
-      </Routes>
-    </Router>
+    <BrowserRouter>
+      <div className="App">
+        <Navigation isLoggedIn={isLoggedIn} username={username} />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route 
+            path="/sign-in" 
+            element={<SignInPage onLogin={handleLogin} />} 
+          />
+          <Route 
+            path="/user" 
+            element={<UserDashboardPage />} 
+          />
+        </Routes>
+        <Footer />
+      </div>
+    </BrowserRouter>
   );
 }
 
-export default App
+export default App;

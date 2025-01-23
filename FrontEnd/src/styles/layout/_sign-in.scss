@@ -1,0 +1,41 @@
+@use '../base/variables' as *;
+
+.sign-in {
+  &-content {
+    box-sizing: border-box;
+    background-color: $color-background-light;
+    width: 300px;
+    margin: 3rem auto 0;
+    padding: 2rem;
+  }
+
+  &-icon {
+    font-size: 5rem;
+  }
+}
+
+.input {
+  &-remember {
+    display: flex;
+
+    label {
+      margin-left: 0.25rem;
+    }
+  }
+
+  &-wrapper {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    margin-bottom: 1rem;
+
+    label {
+      font-weight: bold;
+    }
+
+    input {
+      padding: 5px;
+      font-size: 1.2rem;
+    }
+  }
+}

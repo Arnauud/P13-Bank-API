@@ -1,0 +1,36 @@
+@use '../base/variables' as *;
+
+.main-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 20px;
+
+  a {
+    font-weight: bold;
+    color: $color-text-dark;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &.router-link-exact-active {
+      color: $color-primary;
+    }
+  }
+
+  &-item {
+    margin-right: 0.5rem;
+  }
+
+  &-logo {
+    display: flex;
+    align-items: center;
+
+    &-image {
+      max-width: 100%;
+      width: 200px;
+    }
+  }
+}

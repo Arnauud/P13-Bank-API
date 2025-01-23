@@ -1,0 +1,31 @@
+// Color Palette
+$color-primary: #00bc77;
+$color-secondary: #12002b;
+$color-text-dark: #2c3e50;
+$color-text-light: #fff;
+$color-background-light: #fff;
+$color-background-dark: #12002b;
+$color-border: #ccc;
+
+// Typography
+$font-family-primary: Avenir, Helvetica, Arial, sans-serif;
+$font-size-base: 16px;
+
+// Breakpoints
+$breakpoint-tablet: 720px;
+$breakpoint-desktop: 920px;
+
+// Mixins
+@mixin flex-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin responsive-text($mobile-size, $desktop-size) {
+  font-size: $mobile-size;
+
+  @media (min-width: $breakpoint-desktop) {
+    font-size: $desktop-size;
+  }
+}
