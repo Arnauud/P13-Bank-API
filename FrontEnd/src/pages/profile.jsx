@@ -1,11 +1,17 @@
-import React, { useState } from 'react';
-// import EditNameButton from '../components/EditNameButton';
+import React, { useState, useEffect } from 'react';
 
-const UserDashboardPage = () => {
-  const [username, setUsername] = useState('Tony');
+const profileUser = () => {
+  const [username, setUsername] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editFirstName, setEditFirstName] = useState('');
   const [editLastName, setEditLastName] = useState('');
+
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem('user'));  // Retrieve user data from localStorage
+    if (user) {
+      setUsername(`${user.firstName} ${user.lastName}`);
+    }
+  }, []);  // This effect runs once when the component mounts
 
   const accounts = [
     {
@@ -26,15 +32,20 @@ const UserDashboardPage = () => {
   ];
 
   const handleEditName = () => {
-    setIsEditing(true);
     const [firstName, lastName] = username.split(' ');
     setEditFirstName(firstName);
     setEditLastName(lastName);
+    setIsEditing(true);
   };
 
   const handleSaveName = () => {
     setUsername(`${editFirstName} ${editLastName}`);
     setIsEditing(false);
+    // Optionally save updated name back to localStorage
+    const user = JSON.parse(localStorage.getItem('user'));
+    user.firstName = editFirstName;
+    user.lastName = editLastName;
+    localStorage.setItem('user', JSON.stringify(user));
   };
 
   return (
@@ -62,16 +73,10 @@ const UserDashboardPage = () => {
               />
             </div>
             <div>
-              <button 
-                className="edit-button" 
-                onClick={handleSaveName}
-              >
+              <button className="edit-button" onClick={handleSaveName}>
                 Save
               </button>
-              <button 
-                className="edit-button" 
-                onClick={() => setIsEditing(false)}
-              >
+              <button className="edit-button" onClick={() => setIsEditing(false)}>
                 Cancel
               </button>
             </div>
@@ -79,10 +84,7 @@ const UserDashboardPage = () => {
         ) : (
           <>
             <h1>Welcome back<br />{username}!</h1>
-            <button 
-              className="edit-button"
-              onClick={handleEditName}
-            >
+            <button className="edit-button" onClick={handleEditName}>
               Edit Name
             </button>
           </>
@@ -105,4 +107,4 @@ const UserDashboardPage = () => {
   );
 };
 
-export default UserDashboardPage;
+export default profileUser;

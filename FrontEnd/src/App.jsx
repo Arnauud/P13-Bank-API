@@ -1,24 +1,15 @@
-import React, { useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navigation from "./components/Navigation";
-import Footer from "./components/Footer";
-import HomePage from "./pages/HomePage";
-import SignInPage from "./pages/SignInPage";
-import UserDashboardPage from "./pages/UserDashboardPage";
+// App.js
+import React from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import Navigation from './components/Navigation';
+import Footer from './components/Footer';
+import HomePage from './pages/HomePage';
+import Login from './pages/Login';
+import ProfileUser from './pages/profile';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState('');
-
-  const handleLogin = (name) => {
-    setIsLoggedIn(true);
-    setUsername(name);
-  };
-
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setUsername('');
-  };
+  const { isLoggedIn, username } = useSelector((state) => state.user);
 
   return (
     <BrowserRouter>
@@ -26,14 +17,8 @@ function App() {
         <Navigation isLoggedIn={isLoggedIn} username={username} />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route 
-            path="/sign-in" 
-            element={<SignInPage onLogin={handleLogin} />} 
-          />
-          <Route 
-            path="/user" 
-            element={<UserDashboardPage />} 
-          />
+          <Route path="/login" element={<Login />} />
+          <Route path="/profile" element={<ProfileUser />} />
         </Routes>
         <Footer />
       </div>
