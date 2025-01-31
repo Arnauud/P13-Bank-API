@@ -11,7 +11,7 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isLoggedIn && rememberMe) {
+    if (isLoggedIn && rememberMe && (window.location.pathname === '/' || window.location.pathname === '/login')) {
       navigate('/profile');
     }
   }, [isLoggedIn, rememberMe, navigate]);
