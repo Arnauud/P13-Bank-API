@@ -1,8 +1,20 @@
 import React from 'react';
 import FeatureItem from '../components/FeatureItem';
 import { features } from '../assets/featuresData';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
+
+  const { isLoggedIn, rememberMe } = useSelector((state) => state.user);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isLoggedIn && rememberMe) {
+      navigate('/profile');
+    }
+  }, [isLoggedIn, rememberMe, navigate]);
 
   return (
     <main>

@@ -1,5 +1,4 @@
-// Navigation.jsx
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Logo from '../assets/argentBankLogo.png';
@@ -10,17 +9,11 @@ const Navigation = () => {
   const navigate = useNavigate();
   const { isLoggedIn, username } = useSelector((state) => state.user);
 
-
   const handleLogout = (e) => {
     e.preventDefault();
-    dispatch(logout()); // Logout logic is handled in the userSlice
-    navigate('/login');  // Redirect to login page after logout
-  };
-
-  const handleLogin = () => {
+    dispatch(logout());
     navigate('/login');
   };
-
 
   return (
     <nav className="main-nav">
@@ -39,7 +32,7 @@ const Navigation = () => {
             </Link>
           </>
         ) : (
-          <Link className="main-nav-item" to="/Login" onClick={handleLogin}>
+          <Link className="main-nav-item" to="/Login">
             <i className="fa fa-user-circle"></i> Sign In
           </Link>
         )}

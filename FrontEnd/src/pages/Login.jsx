@@ -1,15 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import axios from 'axios';
-import { login } from '../redux/slices/userSlice'; // Import the login action
+import { login } from '../redux/slices/userSlice';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); // Add error state
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // Initialize Redux dispatch
+  
+  const { isLoggedIn, email: rememberedEmail, rememberMe } = useSelector((state) => state.user);
+
+  const [email, setEmail] = useState(rememberedEmail || ''); // Auto-fill remembered email
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isRemembered, setIsRemembered] = useState(rememberMe);
+
+  // 🔹 Redirect if user is already logged in
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/profile');
+    }
+  }, [isLoggedIn, navigate]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -20,21 +31,15 @@ const Login = () => {
       if (response.data.status === 200) {
         const { token, user } = response.data.body;
 
-        // Save token and user data to localStorage
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-        localStorage.setItem('isLoggedIn', 'true'); // Set login status
+        dispatch(login({ username: user.username, token, email, rememberMe: isRemembered }));
 
-        // Dispatch login action to Redux
-        dispatch(login({ username: user.username, token }));
-
-        // Navigate to the dashboard page
-        navigate('/profile');
+        navigate('/profile'); // Redirect after login
       } else {
-        console.error('Login failed');
+        setError('Invalid email or password.');
       }
     } catch (error) {
-      console.error('Error during login:', error.message);
+      setError('Error during login.');
+      console.error('Login error:', error.message);
     }
   };
 
@@ -63,6 +68,15 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
+          </div>
+          <div className="input-remember">
+            <input
+              type="checkbox"
+              id="remember-me"
+              checked={isRemembered}
+              onChange={(e) => setIsRemembered(e.target.checked)}
+            />
+            <label htmlFor="remember-me">Remember me</label>
           </div>
           {error && <p style={{ color: 'red' }}>{error}</p>}
           <button type="submit" className="sign-in-button">Sign In</button>
