@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import axios from 'axios';
-import { login } from '../redux/slices/userSlice';
+import { handleLogin } from '../redux/actions/userActions'; 
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -10,7 +9,7 @@ const Login = () => {
   
   const { isLoggedIn, email: rememberedEmail, rememberMe } = useSelector((state) => state.user);
 
-  const [email, setEmail] = useState(rememberedEmail || ''); // Auto-fill remembered email
+  const [email, setEmail] = useState(rememberedEmail || ''); 
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isRemembered, setIsRemembered] = useState(rememberMe);
@@ -22,25 +21,9 @@ const Login = () => {
     }
   }, [isLoggedIn, navigate]);
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-
-    try {
-      const response = await axios.post('http://localhost:3001/api/v1/user/login', { email, password });
-
-      if (response.data.status === 200) {
-        const { token, user } = response.data.body;
-
-        dispatch(login({ username: user.username, token, email, rememberMe: isRemembered }));
-
-        navigate('/profile'); // Redirect after login
-      } else {
-        setError('Invalid email or password.');
-      }
-    } catch (error) {
-      setError('Error during login.');
-      console.error('Login error:', error.message);
-    }
+    dispatch(handleLogin({ email, password, isRemembered, navigate, setError })); 
   };
 
   return (

@@ -1,59 +1,54 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { persistUserToStorage, clearUserFromStorage, getStoredUser } from '../utils/userStorage';
 
-// Retrieve persisted user data
+const storedUser = getStoredUser(); // ✅ Use utility function instead of manual JSON.parse()
 const storedToken = localStorage.getItem('token') || sessionStorage.getItem('token');
-const storedUser = localStorage.getItem('user') || sessionStorage.getItem('user');
 const rememberMe = localStorage.getItem('rememberMe') === 'true';
-const email = rememberMe ? localStorage.getItem('email') || '' : '';
 
 const initialState = {
-  isLoggedIn: !!storedToken, // Auto-login if token exists
-  username: storedUser ? JSON.parse(storedUser).username : '',
+  isLoggedIn: !!storedToken,
+  firstName: storedUser?.firstName || '',
+  lastName: storedUser?.lastName || '',
+  email: storedUser?.email || '',
   token: storedToken || null,
   rememberMe: rememberMe,
-  email: email, // Auto-fill email
 };
+
 
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
     login: (state, action) => {
-      const { username, token, email, rememberMe } = action.payload;
+      const { firstName, lastName, email, token, rememberMe } = action.payload;
       state.isLoggedIn = true;
-      state.username = username;
+      state.firstName = firstName;
+      state.lastName = lastName;
+      state.email = email;
       state.token = token;
       state.rememberMe = rememberMe;
-      state.email = rememberMe ? email : '';
 
-      // Store in localStorage or sessionStorage
-      if (rememberMe) {
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify({ username }));
-        localStorage.setItem('rememberMe', 'true');
-        localStorage.setItem('email', email);
-      } else {
-        sessionStorage.setItem('token', token);
-        sessionStorage.setItem('user', JSON.stringify({ username }));
-      }
+      persistUserToStorage({ firstName, lastName, email, token, rememberMe });
     },
     logout: (state) => {
       state.isLoggedIn = false;
-      state.username = '';
+      state.firstName = '';
+      state.lastName = '';
+      state.email = '';
       state.token = null;
       state.rememberMe = false;
-      state.email = '';
 
-      // Clear storage
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      localStorage.removeItem('rememberMe');
-      localStorage.removeItem('email');
-      sessionStorage.removeItem('token');
-      sessionStorage.removeItem('user');
+      clearUserFromStorage();
+    },
+    updateUserName: (state, action) => {
+      const { firstName, lastName } = action.payload;
+      state.firstName = firstName;
+      state.lastName = lastName;
+
+      persistUserToStorage({ firstName, lastName, email: state.email, token: state.token, rememberMe: state.rememberMe });
     },
   },
 });
 
-export const { login, logout } = userSlice.actions;
+export const { login, logout, updateUserName } = userSlice.actions;
 export default userSlice.reducer;

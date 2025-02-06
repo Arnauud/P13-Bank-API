@@ -1,51 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { updateUserName } from '../redux/slices/userSlice'; // Import Redux action
+import { updateUserProfile } from '../api/profileService';
+import { accounts } from '../assets/accountData';
 
-const profileUser = () => {
-  const [username, setUsername] = useState('');
+const ProfileUser = () => {
+  const { firstName, lastName } = useSelector((state) => state.user); //Get user info from Redux
+  const dispatch = useDispatch(); // Initialize dispatch
+
   const [isEditing, setIsEditing] = useState(false);
-  const [editFirstName, setEditFirstName] = useState('');
-  const [editLastName, setEditLastName] = useState('');
+  const [editFirstName, setEditFirstName] = useState(firstName);
+  const [editLastName, setEditLastName] = useState(lastName);
 
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem('user'));  // Retrieve user data from localStorage
-    if (user) {
-      setUsername(`${user.firstName} ${user.lastName}`);
+  const handleSaveName = async () => {
+    try {
+      await updateUserProfile(editFirstName, editLastName); // ✅ Use API abstraction
+      dispatch(updateUserName({ firstName: editFirstName, lastName: editLastName }));
+      setIsEditing(false);
+    } catch (error) {
+      console.error('❌ Error updating user profile:', error);
     }
-  }, []);  // This effect runs once when the component mounts
-
-  const accounts = [
-    {
-      title: 'Argent Bank Checking (x8349)',
-      amount: '$2,082.79',
-      description: 'Available Balance'
-    },
-    {
-      title: 'Argent Bank Savings (x6712)',
-      amount: '$10,928.42',
-      description: 'Available Balance'
-    },
-    {
-      title: 'Argent Bank Credit Card (x8349)',
-      amount: '$184.30',
-      description: 'Current Balance'
-    }
-  ];
-
-  const handleEditName = () => {
-    const [firstName, lastName] = username.split(' ');
-    setEditFirstName(firstName);
-    setEditLastName(lastName);
-    setIsEditing(true);
-  };
-
-  const handleSaveName = () => {
-    setUsername(`${editFirstName} ${editLastName}`);
-    setIsEditing(false);
-    // Optionally save updated name back to localStorage
-    const user = JSON.parse(localStorage.getItem('user'));
-    user.firstName = editFirstName;
-    user.lastName = editLastName;
-    localStorage.setItem('user', JSON.stringify(user));
   };
 
   return (
@@ -73,23 +47,18 @@ const profileUser = () => {
               />
             </div>
             <div>
-              <button className="edit-button" onClick={handleSaveName}>
-                Save
-              </button>
-              <button className="edit-button" onClick={() => setIsEditing(false)}>
-                Cancel
-              </button>
+              <button className="edit-button" onClick={handleSaveName}>Save</button>
+              <button className="edit-button" onClick={() => setIsEditing(false)}>Cancel</button>
             </div>
           </div>
         ) : (
           <>
-            <h1>Welcome back<br />{username}!</h1>
-            <button className="edit-button" onClick={handleEditName}>
-              Edit Name
-            </button>
+            <h1>Welcome back<br />{firstName} {lastName}!</h1>
+            <button className="edit-button" onClick={() => setIsEditing(true)}>Edit Name</button>
           </>
         )}
       </div>
+
       <h2 className="sr-only">Accounts</h2>
       {accounts.map((account, index) => (
         <section key={index} className="account">
@@ -107,4 +76,4 @@ const profileUser = () => {
   );
 };
 
-export default profileUser;
+export default ProfileUser;
